@@ -1,0 +1,54 @@
+---
+title: "toro"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r init}
+
+library("rvest")
+library("knitr")
+library("stringr")
+
+```
+
+```{r pulling in movies}
+
+movies <- read.csv("final_scores_included.csv")
+movies <- movies$movie
+
+
+
+```
+
+```{r iterating through movies}
+
+  movie <- "Crazy Rich Asians"
+
+  search_movie_title <- gsub(" ","%20", movie)
+  show(search_movie_title)
+  
+  start_url <- paste0("https://www.boxofficemojo.com/search/?q=",search_movie_title)
+  
+  session <- html_session(start_url)
+  url_page <- read_html(start_url)
+  title_from_page <- html_nodes(url_page,"b font a") %>% html_text()
+  
+  movie_bom_page <- follow_link(session, title_from_page)
+  bom_page <- read_html(movie_bom_page)
+  domestic_revenue <- html_nodes(bom_page, "center font b") %>% html_text()
+  opening_weekend_revenue <- html_nodes(bom_page, "td td td td .mp_box+ .mp_box table:nth-child(1) tr:nth-child(1) td+ td") %>% html_text()
+  
+
+  opening_weekend_revenue <- str-trim(opening_weekend_revenue, which = "left")
+  
+  opening_weekend_revenue <- gsub("\\$","", opening_weekend_revenue)
+  opening_weekend_revenue <- gsub(",","", opening_weekend_revenue)
+  
+  #opening_weekend_revenue <- as.numeric(opening_weekend_revenue)
+
+```
+
